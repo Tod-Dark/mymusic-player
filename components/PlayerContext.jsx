@@ -292,7 +292,19 @@ export function PlayerProvider({ children }) {
       }}
     >
       {children}
-      <div ref={ytContainerRef} style={{ display: "none" }} />
+      <div
+        ref={ytContainerRef}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: 0,
+          height: 0,
+          overflow: "hidden",
+          visibility: "hidden",
+          pointerEvents: "none",
+        }}
+      />
       <audio
         ref={audioRef}
         onTimeUpdate={(e) => {

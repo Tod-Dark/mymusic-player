@@ -6,6 +6,8 @@ import { usePlayer } from "../../../components/PlayerContext";
 import TrackTable from "../../../components/TrackTable";
 import { gradientFor } from "../../../lib/format";
 
+export const dynamic = "force-dynamic";
+
 export default function PlaylistPage() {
   const { id } = useParams();
   const router = useRouter();

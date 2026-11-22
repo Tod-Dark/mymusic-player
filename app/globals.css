@@ -257,19 +257,35 @@ input[type="range"].rng:hover { --fill: var(--accent); }
 /* ===== Мобильная версия ===== */
 @media (hover: none) { .mini-select, .rm, .heart-btn { opacity: 1; } }
 @media (max-width: 900px) {
-  .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) 72px 56px; grid-template-areas: "main" "player" "mnav"; }
+  .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) 92px calc(58px + env(safe-area-inset-bottom)); grid-template-areas: "main" "player" "mnav"; gap: 6px; padding: max(6px, env(safe-area-inset-top)) 6px 0; }
   .sidebar { display: none; }
-  .mnav { display: flex; }
-  .topbar { padding: 10px 12px; }
+  .mnav { display: flex; padding: 0 4px env(safe-area-inset-bottom); }
+  .mnav a { flex: 1; min-width: 0; padding: 6px 2px; white-space: nowrap; }
+  .topbar { gap: 8px; padding: max(8px, env(safe-area-inset-top)) 10px; min-height: 60px; }
   .nav-arrows { display: none; }
+  .topsearch { min-width: 0; }
+  .theme-switch { flex-shrink: 0; gap: 6px; }
+  .theme-dot { width: 20px; height: 20px; }
   .content { padding: 8px 14px 24px; }
-  .player { grid-template-columns: minmax(0, 1fr) auto; padding: 0 12px; }
+  .player { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: minmax(44px, auto) 16px; grid-template-areas: "now controls" "progress progress"; column-gap: 8px; row-gap: 6px; padding: 8px 12px; }
+  .now { grid-area: now; gap: 8px; }
+  .controls { grid-area: controls; flex-direction: row; justify-content: flex-end; gap: 0; }
+  .buttons { gap: 2px; }
+  .buttons .ctl { padding: 4px; }
+  .buttons .ctl svg { width: 20px; height: 20px; }
+  .buttons .ctl.play { width: 36px; height: 36px; }
+  .buttons .ctl.play svg { width: 20px; height: 20px; }
   .player .progress, .player .opt, .volume { display: none; }
-  .now .mini { width: 48px; height: 48px; }
+  .player .progress { grid-area: progress; display: flex; max-width: none; }
+  .now .mini { width: 42px; height: 42px; }
   .col-album { display: none; }
+  .tracks-wrap { width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+  .tracks { min-width: 560px; }
+  .rowplay { display: grid; }
+  .tracks .idx, .tracks .eq { display: none; }
   .wave { padding: 24px; }
   .wave-art { display: none; }
-  .wave-title { font-size: 28px; }
+  .wave-title { font-size: clamp(22px, 6vw, 28px); }
   .hero { flex-direction: column; align-items: flex-start; }
   .big-cover { width: 140px; height: 140px; }
   .hero-title { font-size: 32px !important; }
@@ -279,3 +295,26 @@ input[type="range"].rng:hover { --fill: var(--accent); }
 .chip { padding: 8px 16px; border-radius: 20px; border: none; background: #2a2a2a; color: #fff; cursor: pointer; font-weight: 600; font-size: 14px; }
 .chip:hover { background: #3a3a3a; }
 .chip.on { background: var(--accent); color: #000; }
+
+@media (max-width: 560px) {
+  .app { grid-template-rows: minmax(0, 1fr) 88px calc(58px + env(safe-area-inset-bottom)); gap: 5px; padding: 5px 5px 0; }
+  .topbar { padding: 8px; }
+  .topsearch input { padding-right: 36px; padding-left: 40px; font-size: 13px; }
+  .theme-switch { gap: 4px; }
+  .theme-dot { width: 18px; height: 18px; }
+  .content { padding: 6px 10px 20px; }
+  .content h1 { font-size: 26px; }
+  .content h2 { font-size: 19px; }
+  .mnav a { padding-inline: 1px; font-size: clamp(9px, 2.7vw, 10px); }
+  .mnav svg { width: 20px; height: 20px; }
+  .player { padding: 8px; }
+  .buttons { gap: 0; }
+  .progress { gap: 6px; font-size: 10px; }
+  .hero-title { font-size: 28px !important; overflow-wrap: anywhere; }
+  .wave { padding: 20px; }
+}
+
+@media (max-width: 380px) {
+  .now .like { display: none; }
+  .mnav a { font-size: 9px; }
+}

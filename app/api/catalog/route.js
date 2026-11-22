@@ -1,40 +1,44 @@
-import { mapTrack } from "../../../lib/deezer";
+import { NextResponse } from "next/server";
 import { PRESETS } from "../../../lib/presets";
-
-async function getJson(url) {
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error(String(res.status));
-  return res.json();
-}
+import { searchYouTube } from "../../../lib/youtube";
 
 export async function GET(request) {
-  const sp = new URL(request.url).searchParams;
+  const params = new URL(request.url).searchParams;
 
   try {
-    const artistQ = sp.get("artist");
-    if (artistQ) {
-      const found = await getJson(
-        `https://api.deezer.com/search/artist?q=${encodeURIComponent(artistQ)}&limit=1`
-      );
-      const a = found.data && found.data[0];
-      if (!a) return Response.json({ name: artistQ, tracks: [] });
-      const top = await getJson(`https://api.deezer.com/artist/${a.id}/top?limit=50`);
-      return Response.json({
-        name: a.name,
-        tracks: (top.data || []).map(mapTrack).filter((t) => t.preview),
+    const artist = params.get("artist")?.trim();
+
+    if (artist) {
+      const tracks = await searchYouTube(`${artist} official music`, 30);
+
+      return NextResponse.json({
+        name: artist,
+        tracks,
       });
     }
 
-    const preset = PRESETS.find((p) => p.key === sp.get("preset"));
-    if (!preset) return Response.json([], { status: 400 });
+    const preset = PRESETS.find(
+      (item) => item.key === params.get("preset")
+    );
 
-    const url =
-      preset.chart !== undefined
-        ? `https://api.deezer.com/chart/${preset.chart}/tracks?limit=100`
-        : `https://api.deezer.com/search?q=${encodeURIComponent(preset.q)}&order=RANKING&limit=100`;
-    const data = await getJson(url);
-    return Response.json((data.data || []).map(mapTrack).filter((t) => t.preview));
-  } catch {
-    return Response.json([], { status: 502 });
+    if (!preset) {
+      return NextResponse.json(
+        { error: "Unknown catalog preset" },
+        { status: 400 }
+      );
+    }
+
+    const tracks = await searchYouTube(
+      preset.q || preset.key,
+      30
+    );
+
+    return NextResponse.json(tracks);
+  } catch (error) {
+    console.error("[api/catalog]", error);
+    return NextResponse.json(
+      { error: error.message },
+      { status: 502 }
+    );
   }
 }

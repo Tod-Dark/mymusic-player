@@ -16,6 +16,16 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+### Open on a phone over Wi-Fi
+
+Connect your phone and computer to the same Wi-Fi network, then start the LAN development server:
+
+```bash
+npm run dev:lan
+```
+
+Find your computer's local IP address (on Linux, run `hostname -I`) and open `http://<computer-local-IP>:3000` on your phone. If it does not connect, allow port 3000 through the computer's firewall. This development server is intended for a trusted local network.
+
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

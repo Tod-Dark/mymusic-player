@@ -1,13 +1,15 @@
-import { mapTrack } from "../../../lib/deezer";
+import { NextResponse } from "next/server";
+import { searchYouTube } from "../../../lib/youtube";
 
 export async function GET() {
   try {
-    const res = await fetch("https://api.deezer.com/chart/0/tracks?limit=20", {
-      next: { revalidate: 3600 },
-    });
-    const data = await res.json();
-    return Response.json((data.data || []).map(mapTrack));
-  } catch {
-    return Response.json([], { status: 502 });
+    const tracks = await searchYouTube("popular music official music video", 20);
+    return NextResponse.json(tracks);
+  } catch (error) {
+    console.error("[api/chart]", error);
+    return NextResponse.json(
+      { error: error.message },
+      { status: 502 }
+    );
   }
 }

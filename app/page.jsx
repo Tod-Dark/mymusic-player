@@ -24,16 +24,18 @@ function shuffle(arr) {
   return a;
 }
 
+
 async function loadChart() {
-  for (const url of ["/api/search?source=audius", "/api/chart"]) {
-    try {
-      const r = await fetch(url);
-      if (!r.ok) continue;
-      const d = await r.json();
-      if (Array.isArray(d) && d.length) return d;
-    } catch {}
+  try {
+    const r = await fetch("/api/chart");
+    if (!r.ok) return [];
+
+    const data = await r.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error("Ошибка загрузки подборки:", error);
+    return [];
   }
-  return [];
 }
 
 export default function Home() {
