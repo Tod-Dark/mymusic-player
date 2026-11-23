@@ -42,23 +42,6 @@ export default function SearchClient() {
     } catch {}
   }, []);
 
-  const saveHistory = useCallback((list) => {
-    try {
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
-    } catch {}
-  }, []);
-
-  const addHistory = useCallback(
-    (query) => {
-      const v = query.trim();
-      if (!v) return;
-      const next = [v, ...history.filter((h) => h !== v)].slice(0, MAX_HISTORY);
-      setHistory(next);
-      saveHistory(next);
-    },
-    [history, saveHistory]
-  );
-
   const clearHistory = useCallback(() => {
     setHistory([]);
     try {
@@ -66,47 +49,49 @@ export default function SearchClient() {
     } catch {}
   }, []);
 
-  const runSearch = useCallback(
-    (query) => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(async () => {
-        if (!query.trim()) {
-          setTracks([]);
-          setSearched(false);
-          setError("");
-          return;
-        }
-
-        setLoading(true);
-        setError("");
-
-        try {
-          const r = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-          if (!r.ok) throw new Error("Search failed");
-          const data = await r.json();
-          setTracks(data);
-          setSearched(true);
-          addHistory(query);
-        } catch {
-          setTracks([]);
-          setError(
-            "Не удалось получить результаты. Проверь интернет или VPN."
-          );
-          setSearched(true);
-        } finally {
-          setLoading(false);
-        }
-      }, 300);
-    },
-    [addHistory]
-  );
-
   useEffect(() => {
-    runSearch(q);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(async () => {
+      if (!q.trim()) {
+        setTracks([]);
+        setSearched(false);
+        setError("");
+        return;
+      }
+
+      setLoading(true);
+      setError("");
+
+      try {
+        const r = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+        if (!r.ok) throw new Error("Search failed");
+        const data = await r.json();
+        setTracks(data);
+        setSearched(true);
+
+        // Сохраняем в историю
+        try {
+          const raw = localStorage.getItem(HISTORY_KEY);
+          const prev = raw ? JSON.parse(raw) : [];
+          const next = [q, ...prev.filter((h) => h !== q)].slice(0, MAX_HISTORY);
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+          setHistory(next);
+        } catch {}
+      } catch {
+        setTracks([]);
+        setError(
+          "Не удалось получить результаты. Проверь интернет или VPN."
+        );
+        setSearched(true);
+      } finally {
+        setLoading(false);
+      }
+    }, 300);
+
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [q, runSearch]);
+  }, [q]);
 
   function submit(e) {
     e.preventDefault();
