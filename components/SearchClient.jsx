@@ -20,6 +20,22 @@ const GENRES = [
   { name: "Фонк", q: "phonk", color: "#503750" },
 ];
 
+const AUDIUS_API = "https://api.audius.co/v1";
+
+function mapAudiusTrack(t) {
+  if (!t || t.is_streamable === false) return null;
+  return {
+    id: `audius:${t.id}`,
+    externalId: String(t.id),
+    source: "audius",
+    title: t.title || "Unknown",
+    artist: t.user?.name || "Unknown",
+    album: "",
+    coverUrl: t.artwork?.["480x480"] || t.artwork?.["150x150"] || "",
+    duration: t.duration || 0,
+  };
+}
+
 export default function SearchClient() {
   const params = useSearchParams();
   const q = params.get("q") || "";
@@ -42,14 +58,17 @@ export default function SearchClient() {
     setLoading(true);
     setError("");
 
-    fetch(`/api/search?q=${encodeURIComponent(q)}`)
+    fetch(`${AUDIUS_API}/tracks/search?query=${encodeURIComponent(q)}&limit=20`, {
+      cache: "no-store",
+    })
       .then((r) => {
         if (!r.ok) throw new Error("Search failed");
         return r.json();
       })
       .then((data) => {
         if (cancelled) return;
-        setTracks(data);
+        const list = (data.data || []).map(mapAudiusTrack).filter(Boolean);
+        setTracks(list);
         setSearched(true);
       })
       .catch(() => {
