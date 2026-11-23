@@ -15,7 +15,7 @@ import {
 const nav = [
   { href: "/", label: "Главная", Icon: IconHome },
   { href: "/search", label: "Поиск", Icon: IconSearch },
-  { href: "/catalog", label: "Каталог", Icon: IconNote },
+    { href: "/catalog", label: "Каталог", Icon: IconNote },
   { href: "/library", label: "Медиатека", Icon: IconLibrary },
   { href: "/favorites", label: "Любимые", Icon: IconHeart },
 ];

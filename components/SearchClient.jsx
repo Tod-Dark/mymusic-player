@@ -20,22 +20,6 @@ const GENRES = [
   { name: "Фонк", q: "phonk", color: "#503750" },
 ];
 
-const AUDIUS_API = "https://api.audius.co/v1";
-
-function mapAudiusTrack(t) {
-  if (!t || t.is_streamable === false) return null;
-  return {
-    id: `audius:${t.id}`,
-    externalId: String(t.id),
-    source: "audius",
-    title: t.title || "Unknown",
-    artist: t.user?.name || "Unknown",
-    album: "",
-    coverUrl: t.artwork?.["480x480"] || t.artwork?.["150x150"] || "",
-    duration: t.duration || 0,
-  };
-}
-
 export default function SearchClient() {
   const params = useSearchParams();
   const q = params.get("q") || "";
@@ -58,17 +42,14 @@ export default function SearchClient() {
     setLoading(true);
     setError("");
 
-    fetch(`${AUDIUS_API}/tracks/search?query=${encodeURIComponent(q)}&limit=20`, {
-      cache: "no-store",
-    })
+    fetch(`/api/search?q=${encodeURIComponent(q)}`)
       .then((r) => {
         if (!r.ok) throw new Error("Search failed");
         return r.json();
       })
       .then((data) => {
         if (cancelled) return;
-        const list = (data.data || []).map(mapAudiusTrack).filter(Boolean);
-        setTracks(list);
+        setTracks(data);
         setSearched(true);
       })
       .catch(() => {
@@ -114,9 +95,7 @@ export default function SearchClient() {
       {error && <p className="empty">{error}</p>}
 
       {!loading && searched && !error && tracks.length === 0 && (
-        <p className="empty">
-          Ничего не найдено. Попробуй другое название или исполнителя.
-        </p>
+        <p className="empty">Ничего не найдено.</p>
       )}
 
       {!loading && tracks.length > 0 && (
