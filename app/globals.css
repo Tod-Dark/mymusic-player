@@ -28,6 +28,7 @@ body {
   background: #000;
   color: var(--text);
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; color: inherit; }
@@ -43,6 +44,7 @@ svg { display: block; }
   height: 100dvh;
   gap: 8px;
   padding: 8px;
+  overscroll-behavior: contain;
 }
 
 /* ===== Сайдбар ===== */
@@ -79,6 +81,7 @@ svg { display: block; }
 .mnav a { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; color: var(--muted); padding: 6px 10px; }
 .mnav a.active { color: var(--text); }
 .mnav svg { width: 22px; height: 22px; }
+.mob-hamburger { display: none; }
 
 /* ===== Основная область ===== */
 .main {
@@ -88,6 +91,7 @@ svg { display: block; }
   overflow-y: auto;
   background: var(--bg);
   background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 24%, #1c1c1c) 0, var(--bg) 340px);
+  overscroll-behavior: contain;
 }
 .content { padding: 8px 28px 48px; }
 .content h1 { margin: 8px 0 20px; font-size: 32px; }
@@ -275,12 +279,17 @@ input[type="range"].rng:hover { --fill: var(--accent); }
   .buttons .ctl svg { width: 20px; height: 20px; }
   .buttons .ctl.play { width: 36px; height: 36px; }
   .buttons .ctl.play svg { width: 20px; height: 20px; }
-  .player .progress, .player .opt, .volume { display: none; }
+  .player .opt, .volume { display: none; }
   .player .progress { grid-area: progress; display: flex; max-width: none; }
   .now .mini { width: 42px; height: 42px; }
   .col-album { display: none; }
-  .tracks-wrap { width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
-  .tracks { min-width: 560px; }
+  .tracks-wrap { width: 100%; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+  .tracks { min-width: 320px; }
+  .tracks td { padding: 4px 8px; font-size: 13px; }
+  .tracks th { padding: 4px 8px; font-size: 11px; }
+  .tracks .mini { width: 36px; height: 36px; }
+  .tracks .num { width: 36px; }
+  .mini-select { display: none; }
   .rowplay { display: grid; }
   .tracks .idx, .tracks .eq { display: none; }
   .wave { padding: 24px; }
@@ -289,6 +298,56 @@ input[type="range"].rng:hover { --fill: var(--accent); }
   .hero { flex-direction: column; align-items: flex-start; }
   .big-cover { width: 140px; height: 140px; }
   .hero-title { font-size: 32px !important; }
+  .mob-hamburger { display: block; }
+  /* Выезжающее боковое меню на мобилке */
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    z-index: 40;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s;
+  }
+  .drawer-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .drawer-sidebar {
+    position: fixed;
+    top: max(6px, env(safe-area-inset-top));
+    left: 0;
+    width: min(280px, 92vw);
+    height: calc(100dvh - 12px);
+    background: var(--panel);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    z-index: 45;
+    transform: translateX(-102%);
+    transition: transform .3s cubic-bezier(.2, 0, 0, 1);
+    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+    overflow-y: auto;
+  }
+  .drawer-sidebar.open { transform: translateX(0); }
+  .drawer-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: var(--hover);
+    color: var(--text);
+    border-radius: 50%;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    z-index: 50;
+  }
 }
 
 .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 16px; }
@@ -308,6 +367,9 @@ input[type="range"].rng:hover { --fill: var(--accent); }
   .mnav a { padding-inline: 1px; font-size: clamp(9px, 2.7vw, 10px); }
   .mnav svg { width: 20px; height: 20px; }
   .player { padding: 8px; }
+  .tracks td { padding: 3px 6px; font-size: 12px; }
+  .tracks th { padding: 3px 6px; font-size: 10px; }
+  .tracks .mini { width: 32px; height: 32px; }
   .buttons { gap: 0; }
   .progress { gap: 6px; font-size: 10px; }
   .hero-title { font-size: 28px !important; overflow-wrap: anywhere; }

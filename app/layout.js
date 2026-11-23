@@ -4,6 +4,7 @@ import Providers from "../components/Providers";
 import Sidebar from "../components/Sidebar";
 import TopBar from "../components/TopBar";
 import PlayerBar from "../components/PlayerBar";
+import MediaSession from "../components/MediaSession";
 
 export const metadata = { title: "MyMusic" };
 
@@ -32,6 +33,7 @@ export default function RootLayout({ children }) {
                 <TopBar />
               </Suspense>
               <div className="content">{children}</div>
+              <MediaSession />
             </main>
             <PlayerBar />
           </div>
